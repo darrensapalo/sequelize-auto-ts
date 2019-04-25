@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import { Observable } from 'rxjs';
+import { Observable, from } from 'rxjs';
+import { mergeMap, toArray } from 'rxjs/operators';
 
 import config from '../sequelize-auto-ts.config';
 
@@ -66,8 +67,38 @@ export default function TransformJSModelToTSModel(folderPath: string, fileName: 
     })
 }
 
-const FileToProcess = "MyModelName.js";
+/**
+ * Returns an observable stream that emits the file path of the newly generated
+ * typescript definitions.
+ * 
+ * @param filePath The path of the models folder
+ */
+export function TransformJSModelsOfFolder(filePath: string): Observable<string[]> {
+    const JavascriptModelDefinitions = fs.readdirSync(filePath)
+        .filter(file => file.endsWith(".js"));
 
-const source$ = TransformJSModelToTSModel(config.folderPath, FileToProcess);
 
-source$.subscribe(console.log);
+    return from(JavascriptModelDefinitions)
+        .pipe(
+            mergeMap(fileName => TransformJSModelToTSModel(filePath, fileName)),
+            toArray()
+        );
+}
+
+/**
+ * Main function for testing purposes.
+ */
+function main() {
+
+    // const FileToProcess = "MyModelName.js";
+
+    // const source$ = TransformJSModelToTSModel(config.folderPath, FileToProcess);
+
+    // source$.subscribe(console.log);
+
+    TransformJSModelsOfFolder(config.folderPath).subscribe(result => {
+        console.log(`Successfully generated typescript definitons:\n   ${result.join("\n   ")}`);
+    });
+}
+
+main();
