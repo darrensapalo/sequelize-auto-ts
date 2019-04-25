@@ -1,3 +1,5 @@
+sequelize-auto-ts.config.ts
+
 # Logs
 logs
 *.log
