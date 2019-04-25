@@ -1,0 +1,44 @@
+{
+  "name": "sequelize-auto-ts",
+  "version": "1.0.0",
+  "description": "Automatically generates model definitions in javascript class-notation for typescript based on the database schema.",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "ts-node src/index.ts",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/darrensapalo/sequelize-auto-ts.git"
+  },
+  "keywords": [
+    "sequelize",
+    "sequelize-auto",
+    "typescript"
+  ],
+  "author": "Darren Karl A. Sapalo",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/darrensapalo/sequelize-auto-ts/issues"
+  },
+  "homepage": "https://github.com/darrensapalo/sequelize-auto-ts#readme",
+  "dependencies": {
+    "rxjs": "^6.4.0",
+    "module-alias": "^2.2.0",
+    "rxjs-compat": "^6.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^11.13.7",
+    "ts-node": "^8.1.0",
+    "typescript": "^3.2.1"
+  },
+  "_moduleAliases": {
+    "@models": "dist/database/models",
+    "@database": "dist/database/database.js",
+    "@interfaces": "dist/interfaces",
+    "@design": "dist/design",
+    "@utils": "dist/util",
+    "@log": "dist/log"
+  }
+}
