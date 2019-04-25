@@ -1,3 +1,6 @@
+#!/usr/bin/env node
+
+import program from 'commander';
 import fs from 'fs';
 import path from 'path';
 import { Observable, from } from 'rxjs';
@@ -88,17 +91,40 @@ export function TransformJSModelsOfFolder(filePath: string): Observable<string[]
 /**
  * Main function for testing purposes.
  */
-function main() {
+function main(modelName: string, directory?: string) {
 
-    // const FileToProcess = "MyModelName.js";
+    const FileToProcess = `${modelName}.js`;
+    console.log(directory);
+    const source$ = TransformJSModelToTSModel(directory || config.folderPath, FileToProcess);
 
-    // const source$ = TransformJSModelToTSModel(config.folderPath, FileToProcess);
+    source$.subscribe(console.log);
 
-    // source$.subscribe(console.log);
-
-    TransformJSModelsOfFolder(config.folderPath).subscribe(result => {
-        console.log(`Successfully generated typescript definitons:\n   ${result.join("\n   ")}`);
-    });
+    // TransformJSModelsOfFolder(config.folderPath).subscribe(result => {
+    //     console.log(`Successfully generated typescript definitons:\n   ${result.join("\n   ")}`);
+    // });
 }
 
-main();
+/**
+ * Module dependencies.
+ */
+
+let modelNameValue: string = undefined;
+let directoryValue: string = undefined;
+
+program
+  .version('0.1.0')
+  .arguments('<modelName>')
+  .option('-d, --directory', 'Choose the directory of the path')
+  .action(function (modelName, directory) {
+    modelNameValue = modelName;
+    directoryValue = directory.rawArgs[4];
+  });
+
+program.parse(process.argv);
+
+if (typeof modelNameValue === 'undefined') {
+   console.error('Please specify the name of the model to generate a typescript schema definition!');
+   process.exit(1);
+}
+
+main(modelNameValue, directoryValue);

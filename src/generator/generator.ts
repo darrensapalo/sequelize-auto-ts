@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 // A regular expression to match the data types, used to protect them using `--`
 export const ProtectDataTypes = /(DataTypes.[\w]+)/g;
 
@@ -49,9 +51,9 @@ export function GenerateTypescriptProperties(properties: { [key: string]: Proper
     
     const template: string = `
     <@PrimaryKey>
-    <@AllowNull>
-        @Column(<ColumnType>)
-        <PropertyName><!?!?>: <DataType>;`
+<@AllowNull>
+    @Column(<ColumnType>)
+    <PropertyName><!?!?>: <DataType>;`
 
     let result = "";
 
@@ -95,25 +97,42 @@ export function GenerateTypescriptProperties(properties: { [key: string]: Proper
  * @param properties The string of the properties in typescript format.
  */
 export function GenerateTypescriptClassDefinition(modelName: string, properties: string): string {
-    let result = `
-    import {DataTypes} from 'sequelize';
-    import {
-        Column,
-        PrimaryKey,
-        Table,
-        Model,
-        AllowNull
-    } from 'sequelize-typescript';
 
-    @Table({
-        timestamps: false,
-        freezeTableName: true,
-        tableName: "<MODEL_NAME>"
-    })
-    export default class <MODEL_NAME> extends Model<<MODEL_NAME>> {
-        
-        <PROPERTIES>
-    }
+    const now = moment();
+    const timestamp = now.format("LLL");
+
+    let result = `
+import {DataTypes} from 'sequelize';
+import {
+    Column,
+    PrimaryKey,
+    Table,
+    Model,
+    AllowNull
+} from 'sequelize-typescript';
+
+
+/**
+ * Schema definition for table <MODEL_NAME>.
+ * 
+ * This schema definition was automatically generated using
+ * \`sequelize-auto-ts\` on ${timestamp}.
+ * 
+ * **Do not modify!**
+ * 
+ * Any modifications to this file may be overwritten if you try
+ * to generate schemas again. For any bugs, please send an issue.
+ * 
+ * @reference https://github.com/darrensapalo/sequelize-auto-ts
+ */
+@Table({
+    timestamps: false,
+    freezeTableName: true,
+    tableName: "<MODEL_NAME>"
+})
+export default class <MODEL_NAME> extends Model<<MODEL_NAME>> {
+    <PROPERTIES>
+}
     `;
 
     result = result.replace(/<MODEL_NAME>/g, modelName);

@@ -24,8 +24,10 @@
   },
   "homepage": "https://github.com/darrensapalo/sequelize-auto-ts#readme",
   "dependencies": {
-    "rxjs": "^6.4.0",
+    "commander": "^2.20.0",
     "module-alias": "^2.2.0",
+    "moment": "^2.24.0",
+    "rxjs": "^6.4.0",
     "rxjs-compat": "^6.4.0"
   },
   "devDependencies": {
