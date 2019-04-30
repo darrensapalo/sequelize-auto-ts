@@ -1,4 +1,6 @@
 import moment from 'moment';
+import { ColumnTypeToDataType } from './ColumnTypeToDataType';
+import { ColumnTypeForceMapping } from './ColumnTypeForceMapping';
 
 // A regular expression to match the data types, used to protect them using `--`
 export const ProtectDataTypes = /(DataTypes.[\w]+)/g;
@@ -20,29 +22,6 @@ export interface PropertyDefinition {
 }
 
 /**
- * Returns the typescript primitive data type based on the 
- * column type of the sequelize column of the table.
- * 
- * @param type The data type as defined in sequelize.
- */
-export function ColumnTypeToDataType(type: string): string {
-    switch(type) {
-        case "DataTypes.INTEGER": return "number";
-        case "DataTypes.TEXT": return "string";
-        case "DataTypes.STRING": return "string";
-        case "DataTypes.FLOAT": return "number";
-        case "DataTypes.DATE": return "Date";
-        case "DataTypes.DATEONLY": return "Date";
-        case "DataTypes.CHAR": return "string";
-        case "GEOGRAPHY": return "any";
-        case "DataTypes.BOOLEAN": return "boolean";
-        
-        default:
-        throw Error(`Unexpected column type ${type}.`);
-    }
-}
-
-/**
  * Returns the string that contains all the properties in typescript format.
  * 
  * @param properties A dynamic object that holds on to the data of a single column of a table.
@@ -51,7 +30,7 @@ export function GenerateTypescriptProperties(properties: { [key: string]: Proper
     
     const template: string = `
     <@PrimaryKey>
-<@AllowNull>
+    <@AllowNull>
     @Column(<ColumnType>)
     <PropertyName><!?!?>: <DataType>;`
 
@@ -63,7 +42,11 @@ export function GenerateTypescriptProperties(properties: { [key: string]: Proper
 
         const prop = properties[key];
 
-        const ColumnType = prop.type.replace(PeelDataTypes, "$1");
+        let ColumnType = prop.type.replace(PeelDataTypes, "$1");
+
+        ColumnType = ColumnTypeForceMapping(ColumnType);
+        
+
         instance = instance.replace("<ColumnType>", ColumnType);
 
         instance = instance.replace("<PropertyName>", key);
@@ -74,7 +57,7 @@ export function GenerateTypescriptProperties(properties: { [key: string]: Proper
             instance = instance.replace("<@PrimaryKey>", "@PrimaryKey");
             instance = instance.replace("<!?!?>", "!");
         } else {
-            instance = instance.replace(/<@PrimaryKey>\n/, "");
+            instance = instance.replace(/[ \t]+<@PrimaryKey>\n/, "");
         }
 
         if (prop.allowNull) {
@@ -82,7 +65,7 @@ export function GenerateTypescriptProperties(properties: { [key: string]: Proper
             instance = instance.replace("<!?!?>", "?");
         } else {
             instance = instance.replace("<!?!?>", "!");
-            instance = instance.replace(/<@AllowNull>\n/, "");
+            instance = instance.replace(/[ \t]+<@AllowNull>\n/, "");
         }
 
         result += `${instance}\n`;
