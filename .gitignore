@@ -1,6 +1,7 @@
 sequelize-auto.json
 sequelize-auto-ts.config.ts
 generate-model.sh
+generate-model-and-endpoint.sh
 
 # Logs
 logs
