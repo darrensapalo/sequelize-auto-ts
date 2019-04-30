@@ -31,6 +31,7 @@ export function GenerateTypescriptProperties(properties: { [key: string]: Proper
     const template: string = `
     <@PrimaryKey>
     <@AllowNull>
+    <@AutoIncrement>
     @Column(<ColumnType>)
     <PropertyName><!?!?>: <DataType>;`
 
@@ -68,6 +69,12 @@ export function GenerateTypescriptProperties(properties: { [key: string]: Proper
             instance = instance.replace(/[ \t]+<@AllowNull>\n/, "");
         }
 
+        if (prop.autoIncrement) {
+            instance = instance.replace("<@AutoIncrement>", "@AutoIncrement");
+        }else {
+            instance = instance.replace(/[ \t]+<@AutoIncrement>\n/, "");
+        }
+
         result += `${instance}\n`;
     }
 
@@ -79,7 +86,7 @@ export function GenerateTypescriptProperties(properties: { [key: string]: Proper
  * @param modelName The name of the model.
  * @param properties The string of the properties in typescript format.
  */
-export function GenerateTypescriptClassDefinition(modelName: string, properties: string): string {
+export function GenerateTypescriptClassDefinition(modelName: string, properties: string, metadata: string): string {
 
     const now = moment();
     const timestamp = now.format("LLL");
@@ -91,7 +98,8 @@ import {
     PrimaryKey,
     Table,
     Model,
-    AllowNull
+    AllowNull,
+    AutoIncrement
 } from 'sequelize-typescript';
 
 
@@ -108,18 +116,17 @@ import {
  * 
  * @reference https://github.com/darrensapalo/sequelize-auto-ts
  */
-@Table({
-    timestamps: false,
-    freezeTableName: true,
-    tableName: "<MODEL_NAME>"
-})
+@Table(<METADATA>)
 export default class <MODEL_NAME> extends Model<<MODEL_NAME>> {
     <PROPERTIES>
 }
     `;
+    //DEADBEEF
+    const hasTriggers = "";
 
     result = result.replace(/<MODEL_NAME>/g, modelName);
     result = result.replace(/<PROPERTIES>/, properties);
+    result = result.replace(/<METADATA>/, JSON.stringify(metadata, null, 4))
 
     return result;
 }

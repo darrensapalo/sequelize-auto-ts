@@ -35,8 +35,12 @@ export default function TransformJSModelToTSModel(folderPath: string, fileName: 
         
         // Parse the table schema data found at the end of the table definition
         const EndOfFileCurlies = PluckFromString(fileData, LastTableData);
+
         fileData = StripFromString(fileData, EndOfFileCurlies);
-        const MetaData = PluckFromString(EndOfFileCurlies, MetaDataExtractor);
+        
+        let MetaData = PluckFromString(EndOfFileCurlies, MetaDataExtractor);
+        console.log(MetaData);
+        MetaData = ParseRelaxedJson(MetaData);
 
         // Re-define the data types as a string type, enclosed with `--`
         fileData = fileData.replace(ProtectDataTypes, "\"--$&--\"");
@@ -52,7 +56,7 @@ export default function TransformJSModelToTSModel(folderPath: string, fileName: 
         fileData = fileData.replace(PeelDataTypes, "$1");
 
         // Generate the whole typescript class
-        const resultingFile = GenerateTypescriptClassDefinition(modelName, Properties);
+        const resultingFile = GenerateTypescriptClassDefinition(modelName, Properties, MetaData);
         
         // Write the typescript class into the same folder from which the model
         // came from, except it's in typescript instead of javascript.
