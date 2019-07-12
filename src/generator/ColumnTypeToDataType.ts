@@ -10,6 +10,7 @@ export function ColumnTypeToDataType(type: string): string {
         case "DataTypes.TEXT": return "string";
         case "DataTypes.STRING": return "string";
         case "DataTypes.FLOAT": return "number";
+        case "DataTypes.TIME": return "Date";
         case "DataTypes.DATE": return "Date";
         case "DataTypes.DATEONLY": return "Date";
         case "DataTypes.CHAR": return "string";

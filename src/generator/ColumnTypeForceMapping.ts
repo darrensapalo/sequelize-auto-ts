@@ -6,5 +6,8 @@ export function ColumnTypeForceMapping(columnType: string): string {
     if (columnType === "GEOGRAPHY") {
         return "DataTypes.GEOGRAPHY";
     }
+    if (columnType === "MONEY") {
+        return "DataTypes.STRING";
+    }
     return columnType;
 }
